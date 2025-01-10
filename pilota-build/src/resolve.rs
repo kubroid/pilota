@@ -18,7 +18,7 @@ use crate::{
     },
     rir::Mod,
     symbol::{DefId, EnumRepr, FileId, Ident, Symbol},
-    tags::{RustType, RustWrapperArc, TagId, Tags},
+    tags::{ParametersOverride, RustType, RustWrapperArc, TagId, Tags},
     ty::{Folder, TyKind},
 };
 
@@ -662,6 +662,10 @@ impl Resolver {
                                     name: a.name.clone(),
                                     id: a.id,
                                     tags_id,
+                                    kind: match a.attribute {
+                                        ir::FieldKind::Required => FieldKind::Required,
+                                        ir::FieldKind::Optional => FieldKind::Optional,
+                                    },
                                 });
                                 self.nodes.insert(
                                     def_id,

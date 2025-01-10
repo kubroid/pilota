@@ -153,6 +153,27 @@ impl Annotation for RustType {
 }
 
 #[derive(Debug)]
+pub struct ParametersOverride(pub FastStr);
+
+impl PartialEq<str> for ParametersOverride {
+    fn eq(&self, other: &str) -> bool {
+        self.0 == other
+    }
+}
+
+impl FromStr for ParametersOverride {
+    type Err = std::convert::Infallible;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(Self(FastStr::new(s)))
+    }
+}
+
+impl Annotation for ParametersOverride {
+    const KEY: &'static str = "pilota.required";
+}
+
+#[derive(Debug)]
 pub struct RustWrapperArc(pub bool);
 
 impl FromStr for RustWrapperArc {
@@ -194,7 +215,6 @@ impl FromStr for KeepUnknownFields {
 }
 
 pub mod protobuf {
-
     #[derive(Copy, Clone, PartialEq, Eq)]
     pub enum ProstType {
         SInt32,

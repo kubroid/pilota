@@ -14,7 +14,7 @@ use crate::{
     index::Idx,
     ir::{self, Arg, Enum, EnumVariant, FieldKind, File, Item, ItemKind, Path},
     symbol::{EnumRepr, FileId, Ident},
-    tags::{Annotation, PilotaName, RustWrapperArc, Tags},
+    tags::{Annotation, ParametersOverride, PilotaName, RustWrapperArc, Tags},
     util::error_abort,
     IdentName,
 };
@@ -319,6 +319,11 @@ impl ThriftLower {
                     id: a.id,
                     name: self.lower_ident(&a.name),
                     tags: Arc::new(self.extract_tags(&a.annotations)),
+                    attribute: match a.attribute {
+                        pilota_thrift_parser::Attribute::Required => FieldKind::Required,
+                        pilota_thrift_parser::Attribute::Optional
+                        | pilota_thrift_parser::Attribute::Default => FieldKind::Optional,
+                    },
                 })
                 .collect(),
             ret: self.lower_ty(&method.result_type),
@@ -505,7 +510,7 @@ impl ThriftLower {
         }
 
         annotations.iter().for_each(
-            |annotation| with_tags!(annotation -> crate::tags::PilotaName | crate::tags::RustType | crate::tags::RustWrapperArc | crate::tags::SerdeAttribute),
+            |annotation| with_tags!(annotation -> crate::tags::PilotaName | crate::tags::RustType | crate::tags::ParametersOverride | crate::tags::RustWrapperArc | crate::tags::SerdeAttribute),
         );
 
         tags
