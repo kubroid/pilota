@@ -18,7 +18,7 @@ use crate::{
     },
     rir::Mod,
     symbol::{DefId, EnumRepr, FileId, Ident, Symbol},
-    tags::{ParametersOverride, RustType, RustWrapperArc, TagId, Tags},
+    tags::{RustType, RustWrapperArc, TagId, Tags},
     ty::{Folder, TyKind},
 };
 
