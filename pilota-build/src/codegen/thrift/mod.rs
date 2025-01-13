@@ -12,7 +12,7 @@ use crate::{
     },
     rir::EnumVariant,
     symbol::{DefId, EnumRepr, Symbol},
-    tags::thrift::EntryMessage,
+    tags::{thrift::EntryMessage, ParametersOverride},
     ty::TyKind,
 };
 
@@ -460,6 +460,12 @@ impl CodegenBackend for ThriftBackend {
     fn codegen_struct_impl(&self, def_id: DefId, stream: &mut String, s: &Message) {
         let keep = self.keep_unknown_fields.contains(&def_id);
         let name = self.cx.rust_name(def_id);
+        let _parameters_override = self.node_tags(def_id).map_or(false, |tags| {
+            tags.get::<ParametersOverride>()
+                .map(|value| value == "override")
+                .unwrap_or(false)
+        });
+
         let mut encode_fields = self.codegen_encode_fields(&s.fields).join("");
         if keep {
             encode_fields.push_str(
